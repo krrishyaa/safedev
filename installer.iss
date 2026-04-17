@@ -76,23 +76,28 @@ end;
 
 function RemovePathEntry(PathValue, EntryToRemove: string): string;
 var
-  Parts: TArrayOfString;
-  I: Integer;
+  I, StartIdx, EndIdx: Integer;
   CurrentPart: string;
 begin
   Result := '';
-  Parts := SplitString(PathValue, ';');
-
-  for I := 0 to GetArrayLength(Parts) - 1 do
+  I := 1;
+  while I <= Length(PathValue) do
   begin
-    CurrentPart := Trim(Parts[I]);
-    if (CurrentPart <> '') and (CompareText(CurrentPart, EntryToRemove) <> 0) then
+    StartIdx := I;
+    while (I <= Length(PathValue)) and (PathValue[I] <> ';') do Inc(I);
+    EndIdx := I - 1;
+    if StartIdx <= EndIdx then
     begin
-      if Result = '' then
-        Result := CurrentPart
-      else
-        Result := Result + ';' + CurrentPart;
+      CurrentPart := Trim(Copy(PathValue, StartIdx, EndIdx - StartIdx + 1));
+      if (CurrentPart <> '') and (CompareText(CurrentPart, EntryToRemove) <> 0) then
+      begin
+        if Result = '' then
+          Result := CurrentPart
+        else
+          Result := Result + ';' + CurrentPart;
+      end;
     end;
+    if (I <= Length(PathValue)) and (PathValue[I] = ';') then Inc(I);
   end;
 end;
 
